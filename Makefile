@@ -1,4 +1,4 @@
-.PHONY: build install-deps clean
+.PHONY: build install-deps package clean
 
 build: install-deps
 	npm run compile
@@ -6,5 +6,9 @@ build: install-deps
 install-deps:
 	npm install
 
+# Package a universal VSIX (no bundled binary).
+package: build
+	npx @vscode/vsce package -o gomib-universal.vsix
+
 clean:
-	rm -rf out node_modules
+	rm -rf out node_modules bin *.vsix

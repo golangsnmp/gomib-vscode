@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package VSIXes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - vsce_target: linux-x64
+            lsp_artifact: mib-lsp-linux-amd64
+          - vsce_target: linux-arm64
+            lsp_artifact: mib-lsp-linux-arm64
+          - vsce_target: darwin-x64
+            lsp_artifact: mib-lsp-darwin-amd64
+          - vsce_target: darwin-arm64
+            lsp_artifact: mib-lsp-darwin-arm64
+          - vsce_target: win32-x64
+            lsp_artifact: mib-lsp-windows-amd64.exe
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+
+      - name: Determine mib-lsp version
+        id: lsp
+        run: |
+          # Use matching tag if it exists, otherwise latest release.
+          tag="${GITHUB_REF_NAME}"
+          if gh release view "$tag" --repo golangsnmp/gomib-lsp > /dev/null 2>&1; then
+            echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=$(gh release view --repo golangsnmp/gomib-lsp --json tagName -q .tagName)" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Download mib-lsp binary
+        run: |
+          mkdir -p bin
+          gh release download "${{ steps.lsp.outputs.tag }}" \
+            --repo golangsnmp/gomib-lsp \
+            --pattern "${{ matrix.lsp_artifact }}" \
+            --dir bin
+
+          # Rename to the path the extension expects.
+          if [[ "${{ matrix.vsce_target }}" == win32-* ]]; then
+            mv bin/${{ matrix.lsp_artifact }} bin/mib-lsp.exe
+          else
+            mv bin/${{ matrix.lsp_artifact }} bin/mib-lsp
+            chmod +x bin/mib-lsp
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Package VSIX
+        run: npx @vscode/vsce package --target ${{ matrix.vsce_target }} -o gomib-${{ matrix.vsce_target }}.vsix
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vsix-${{ matrix.vsce_target }}
+          path: '*.vsix'
+
+  # Universal VSIX (no bundled binary, uses mib-lsp from PATH).
+  package-universal:
+    name: Package universal VSIX
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Package VSIX
+        run: npx @vscode/vsce package -o gomib-universal.vsix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vsix-universal
+          path: '*.vsix'
+
+  release:
+    name: Create release
+    needs: [package, package-universal]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: vsix-*
+          merge-multiple: true
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: '*.vsix'
