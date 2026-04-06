@@ -1,0 +1,74 @@
+{
+  "name": "gomib-vscode",
+  "displayName": "MIB",
+  "description": "SNMP MIB language support",
+  "version": "0.1.0",
+  "publisher": "golangsnmp",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/golangsnmp/gomib-vscode"
+  },
+  "keywords": [
+    "snmp",
+    "mib",
+    "smi",
+    "asn1",
+    "network"
+  ],
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mib",
+        "aliases": [
+          "MIB",
+          "SMI",
+          "SNMP MIB"
+        ],
+        "extensions": [
+          ".mib",
+          ".my",
+          ".smi"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mib",
+        "scopeName": "source.mib",
+        "path": "./syntaxes/mib.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "MIB",
+      "properties": {
+        "mib.server.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the mib-lsp binary. If empty, uses the bundled binary."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "@types/vscode": "^1.110.0",
+    "typescript": "^6.0.2"
+  }
+}

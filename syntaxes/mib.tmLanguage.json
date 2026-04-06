@@ -1,0 +1,115 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "MIB",
+  "scopeName": "source.mib",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#string" },
+    { "include": "#module-definition" },
+    { "include": "#imports" },
+    { "include": "#macro-invocation" },
+    { "include": "#clause-keyword" },
+    { "include": "#type-keyword" },
+    { "include": "#status-access-keyword" },
+    { "include": "#structural-keyword" },
+    { "include": "#oid-value" },
+    { "include": "#number" },
+    { "include": "#assignment" },
+    { "include": "#identifier" }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.double-dash.mib",
+      "match": "--.*$"
+    },
+    "string": {
+      "name": "string.quoted.double.mib",
+      "begin": "\"",
+      "end": "\""
+    },
+    "module-definition": {
+      "match": "([A-Z][A-Za-z0-9-]*)\\s+(DEFINITIONS)\\s*(::=)\\s*(BEGIN)",
+      "captures": {
+        "1": { "name": "entity.name.namespace.mib" },
+        "2": { "name": "keyword.control.definitions.mib" },
+        "3": { "name": "keyword.operator.assignment.mib" },
+        "4": { "name": "keyword.control.begin.mib" }
+      }
+    },
+    "imports": {
+      "begin": "\\b(IMPORTS)\\b",
+      "end": ";",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.imports.mib" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.terminator.imports.mib" }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        {
+          "match": "\\b(FROM)\\b",
+          "name": "keyword.control.from.mib"
+        },
+        {
+          "match": "\\b([A-Z][A-Za-z0-9-]*)(?=\\s*;|\\s+[A-Z])",
+          "name": "entity.name.namespace.mib"
+        },
+        {
+          "match": "\\b([A-Za-z][A-Za-z0-9-]*)\\b",
+          "name": "variable.other.imported.mib"
+        }
+      ]
+    },
+    "macro-invocation": {
+      "match": "\\b(OBJECT-TYPE|MODULE-IDENTITY|OBJECT-IDENTITY|NOTIFICATION-TYPE|TEXTUAL-CONVENTION|OBJECT-GROUP|NOTIFICATION-GROUP|MODULE-COMPLIANCE|AGENT-CAPABILITIES|TRAP-TYPE)\\b",
+      "name": "keyword.other.macro.mib"
+    },
+    "clause-keyword": {
+      "match": "\\b(SYNTAX|MAX-ACCESS|MIN-ACCESS|ACCESS|STATUS|DESCRIPTION|REFERENCE|INDEX|DEFVAL|AUGMENTS|UNITS|DISPLAY-HINT|OBJECTS|NOTIFICATIONS|MODULE|MANDATORY-GROUPS|GROUP|WRITE-SYNTAX|PRODUCT-RELEASE|SUPPORTS|INCLUDES|VARIATION|CREATION-REQUIRES|REVISION|LAST-UPDATED|ORGANIZATION|CONTACT-INFO|IMPLIED|SIZE|ENTERPRISE|VARIABLES)\\b",
+      "name": "keyword.other.clause.mib"
+    },
+    "type-keyword": {
+      "match": "\\b(INTEGER|Integer32|Unsigned32|Counter32|Counter64|Gauge32|IpAddress|Opaque|TimeTicks|BITS|OCTET\\s+STRING|Counter|Gauge|NetworkAddress|OBJECT\\s+IDENTIFIER|SEQUENCE)\\b",
+      "name": "support.type.mib"
+    },
+    "status-access-keyword": {
+      "match": "\\b(current|deprecated|obsolete|mandatory|optional|read-only|read-write|read-create|write-only|not-accessible|accessible-for-notify|not-implemented)\\b",
+      "name": "constant.language.mib"
+    },
+    "structural-keyword": {
+      "match": "\\b(DEFINITIONS|BEGIN|END|EXPORTS|FROM|MACRO|OF|CHOICE)\\b",
+      "name": "keyword.control.mib"
+    },
+    "oid-value": {
+      "begin": "::=\\s*\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": { "name": "keyword.operator.assignment.mib" }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        {
+          "match": "\\b([a-z][A-Za-z0-9-]*)\\b",
+          "name": "variable.other.oid-component.mib"
+        },
+        {
+          "match": "\\b(\\d+)\\b",
+          "name": "constant.numeric.oid.mib"
+        }
+      ]
+    },
+    "number": {
+      "match": "\\b-?\\d+\\b",
+      "name": "constant.numeric.mib"
+    },
+    "assignment": {
+      "match": "::=",
+      "name": "keyword.operator.assignment.mib"
+    },
+    "identifier": {
+      "match": "\\b([a-z][A-Za-z0-9-]*)\\b",
+      "name": "variable.other.mib"
+    }
+  }
+}
