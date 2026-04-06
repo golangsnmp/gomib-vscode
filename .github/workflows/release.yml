@@ -26,9 +26,9 @@ jobs:
             lsp_artifact: mib-lsp-windows-amd64.exe
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
       - run: npm ci
 
       - name: Determine mib-lsp version
@@ -65,34 +65,17 @@ jobs:
       - name: Package VSIX
         run: npx @vscode/vsce package --target ${{ matrix.vsce_target }} -o gomib-${{ matrix.vsce_target }}.vsix
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: vsix-${{ matrix.vsce_target }}
           path: '*.vsix'
 
-  # Universal VSIX (no bundled binary, uses mib-lsp from PATH).
-  package-universal:
-    name: Package universal VSIX
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - name: Package VSIX
-        run: npx @vscode/vsce package -o gomib-universal.vsix
-      - uses: actions/upload-artifact@v4
-        with:
-          name: vsix-universal
-          path: '*.vsix'
-
   release:
     name: Create release
-    needs: [package, package-universal]
+    needs: package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           pattern: vsix-*
           merge-multiple: true
