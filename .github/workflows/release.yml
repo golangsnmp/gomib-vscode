@@ -93,7 +93,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
-      - run: npm install -g @eclipse-opensource/openvsx
+      - run: npm install -g ovsx
       - uses: actions/download-artifact@v5
         with:
           pattern: vsix-*
