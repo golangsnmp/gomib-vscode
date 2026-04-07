@@ -3,7 +3,7 @@
   "displayName": "MIB",
   "description": "SNMP MIB language support",
   "version": "0.2.0",
-  "publisher": "lukeod",
+  "publisher": "golangsnmp",
   "license": "MIT",
   "repository": {
     "type": "git",
