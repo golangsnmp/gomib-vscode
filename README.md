@@ -11,6 +11,9 @@ SNMP MIB language support for Visual Studio Code, powered by [gomib](https://git
 - Go to definition
 - Find references
 - Document symbols and workspace symbols
+- Workspace reload on external file changes (git checkout, new files on
+  disk, file create/rename/delete from the Explorer)
+- Multi-root workspace support
 
 ## Configuration
 
