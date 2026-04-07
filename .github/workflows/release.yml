@@ -84,3 +84,24 @@ jobs:
         with:
           generate_release_notes: true
           files: '*.vsix'
+
+  publish-openvsx:
+    name: Publish to Open VSX
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: npm install -g @eclipse-opensource/openvsx
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: vsix-*
+          merge-multiple: true
+      - name: Publish VSIXes
+        run: |
+          for vsix in *.vsix; do
+            ovsx publish "$vsix" -p "$OVSX_PAT"
+          done
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
