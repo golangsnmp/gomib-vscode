@@ -1,8 +1,8 @@
 {
   "name": "gomib-vscode",
-  "displayName": "MIB",
+  "displayName": "gomib-vscode",
   "description": "SNMP MIB language support",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "golangsnmp",
   "license": "MIT",
   "repository": {
