@@ -1,7 +1,6 @@
 .github/
 .vscode/
 src/
-node_modules/
 *.vsix
 tsconfig.json
 Makefile
